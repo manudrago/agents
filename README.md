@@ -47,6 +47,7 @@ The `marketing/` directory holds live strategy documents:
 | [`marketing-strategy.md`](marketing/marketing-strategy.md) | Full marketing strategy — domain consolidation, legacy-as-migration-engine, AI service integration, channel plan, phased roadmap |
 | [`domain-audit-checklist.md`](marketing/domain-audit-checklist.md) | Keep/merge/kill worksheet for the ~25-domain estate, with decision rules and migration hygiene checks |
 | [`ai-services-page-copy.md`](marketing/ai-services-page-copy.md) | Draft copy for the AI services hub, with SEO notes and a supporting content cluster |
+| [`lovable-ai-site-prompt.md`](marketing/lovable-ai-site-prompt.md) | Paste-ready Lovable prompt to build the AI site from that copy, plus staged follow-up prompts |
 
 All three are drafts for review. The strategy is based on publicly available information — its quantitative claims need validating against Search Console, analytics, and CRM data before budget is committed.
 
