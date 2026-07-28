@@ -38,6 +38,18 @@ Claude will also delegate to the right agent automatically based on each agent's
 - The **delivery-manager** coordinates the **solutions-architect** and **qa-lead**, and feeds updates to the **client-success-manager**, who owns everything the client sees.
 - The **client-success-manager** hands case-study candidates to the marketing team (subject to client approval).
 
+## Marketing work in progress
+
+The `marketing/` directory holds live strategy documents:
+
+| Document | What it is |
+|---|---|
+| [`marketing-strategy.md`](marketing/marketing-strategy.md) | Full marketing strategy — domain consolidation, legacy-as-migration-engine, AI service integration, channel plan, phased roadmap |
+| [`domain-audit-checklist.md`](marketing/domain-audit-checklist.md) | Keep/merge/kill worksheet for the ~25-domain estate, with decision rules and migration hygiene checks |
+| [`ai-services-page-copy.md`](marketing/ai-services-page-copy.md) | Draft copy for the AI services hub, with SEO notes and a supporting content cluster |
+
+All three are drafts for review. The strategy is based on publicly available information — its quantitative claims need validating against Search Console, analytics, and CRM data before budget is committed.
+
 ## Editing agents
 
 Each agent is a Markdown file with YAML frontmatter (`name`, `description`, optional `model`) followed by its system prompt. Edit the files directly, or ask Claude to update them. Docs: <https://code.claude.com/docs/en/sub-agents>
