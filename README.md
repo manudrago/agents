@@ -48,6 +48,7 @@ The `marketing/` directory holds live strategy documents:
 | [`domain-audit-checklist.md`](marketing/domain-audit-checklist.md) | Keep/merge/kill worksheet for the ~25-domain estate, with decision rules and migration hygiene checks |
 | [`ai-services-page-copy.md`](marketing/ai-services-page-copy.md) | Draft copy for the AI services hub, with SEO notes and a supporting content cluster |
 | [`lovable-ai-site-prompt.md`](marketing/lovable-ai-site-prompt.md) | Paste-ready Lovable prompt to build the AI site from that copy, plus staged follow-up prompts |
+| [`google-ads-improvement-plan.md`](marketing/google-ads-improvement-plan.md) | Google Ads audit framework, prioritised improvements, negative keyword starter list and sequencing (hypotheses pending account data) |
 
 All three are drafts for review. The strategy is based on publicly available information — its quantitative claims need validating against Search Console, analytics, and CRM data before budget is committed.
 
