@@ -3,20 +3,108 @@
 **Purpose:** rebuild `influentialsoftware.ai` as a focused campaign site that feeds the main domain, per the marketing strategy.
 **Source of truth for copy:** [`ai-services-page-copy.md`](ai-services-page-copy.md) — this prompt embeds that copy so Lovable doesn't invent its own.
 
+**Visual reference:** <https://influential.software/> — the new house style. The build must match it, not invent a look. See "Matching the house style" below for how to feed it to Lovable.
+
 ## How to use this
 
-1. Fill in the **placeholders** table below first. Do not paste the prompt with `[BRACKETS]` still in it — Lovable will happily invent plausible-looking client names and statistics, and you do not want those going live.
-2. Paste **Prompt 1** into a new Lovable project. Let it build completely before touching anything.
-3. Work through the follow-up prompts **one at a time**, checking the result after each. Lovable handles a series of focused instructions far better than one enormous one, and small prompts are much easier to undo.
-4. Keep the "never do" constraints in every prompt where they matter. They tend to drift on longer builds.
+1. **Extract the house style** from `influential.software` using the console snippet in the next section, and fill in the style tokens table. Attach screenshots to the Lovable prompt as well — Lovable matches an uploaded reference far more accurately than any written description.
+2. Fill in the **placeholders** table. Do not paste the prompt with `[BRACKETS]` still in it — Lovable will happily invent plausible-looking client names and statistics, and you do not want those going live.
+3. Paste **Prompt 1** into a new Lovable project, with the screenshots attached. Let it build completely before touching anything.
+4. Work through the follow-up prompts **one at a time**, checking the result after each. Lovable handles a series of focused instructions far better than one enormous one, and small prompts are much easier to undo.
+5. Keep the "never do" constraints in every prompt where they matter. They tend to drift on longer builds.
+
+---
+
+## Matching the house style
+
+The AI site must look like it belongs to the same company as `influential.software`. Two things get you there, and you want both.
+
+### 1. Attach screenshots (most important)
+
+Lovable reads uploaded images and will match layout, spacing, colour and type from them far more reliably than from prose. Capture from `influential.software`:
+
+- Full-page screenshot of the homepage (use the browser's full-page capture, not a viewport crop)
+- Hero section on its own, desktop
+- A services or cards section
+- The header, both at the top of the page and in its scrolled state
+- The footer
+- Any button, form, or card component you particularly want reused
+- The homepage at 375px width (mobile), so it matches the responsive behaviour too
+
+Attach these to the Lovable chat alongside Prompt 1.
+
+### 2. Extract exact design tokens
+
+Screenshots get the feel; tokens get the details exactly right. Open `influential.software` in Chrome, press F12, go to Console, and paste this. It reports the fonts, colours and type scale actually in use.
+
+```js
+(() => {
+  const els = [...document.querySelectorAll('body *')].filter(el => el.offsetParent !== null);
+  const tally = (fn) => {
+    const m = new Map();
+    els.forEach(el => { const v = fn(getComputedStyle(el), el); if (v) m.set(v, (m.get(v) || 0) + 1); });
+    return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+  };
+  const hex = (c) => {
+    const m = c.match(/\d+/g);
+    if (!m || (m[3] !== undefined && +m[3] === 0)) return null;
+    return '#' + m.slice(0, 3).map(n => (+n).toString(16).padStart(2, '0')).join('');
+  };
+  console.log('FONTS:', tally(s => s.fontFamily.split(',')[0].replace(/"/g, '')));
+  console.log('TEXT COLOURS:', tally(s => hex(s.color)));
+  console.log('BACKGROUNDS:', tally(s => hex(s.backgroundColor)));
+  console.log('HEADINGS:', [...document.querySelectorAll('h1,h2,h3')].slice(0, 8)
+    .map(h => { const s = getComputedStyle(h);
+      return `${h.tagName} ${s.fontSize} / ${s.fontWeight} / ${s.lineHeight} / ${s.letterSpacing}`; }));
+  console.log('BUTTONS:', [...document.querySelectorAll('a,button')]
+    .filter(b => { const s = getComputedStyle(b); return s.backgroundColor !== 'rgba(0, 0, 0, 0)' && b.offsetParent; })
+    .slice(0, 5).map(b => { const s = getComputedStyle(b);
+      return `${hex(s.backgroundColor)} / ${hex(s.color)} / radius ${s.borderRadius} / pad ${s.padding} / ${s.fontSize}`; }));
+  console.log('RADII:', tally(s => s.borderRadius !== '0px' ? s.borderRadius : null));
+  console.log('MAX WIDTHS:', tally(s => s.maxWidth !== 'none' ? s.maxWidth : null));
+})();
+```
+
+Copy the console output into the table below. (Paste the raw output back to me and I'll fill the table and bake the values into the prompt.)
+
+| Token | Value from reference site |
+|---|---|
+| Heading font | |
+| Body font | |
+| Primary brand colour | |
+| Dark neutral / text colour | |
+| Accent / CTA colour | |
+| Page background (light) | |
+| Section alt background | |
+| H1 size / weight / tracking | |
+| H2 size / weight / tracking | |
+| Body size / line height | |
+| Button radius / padding | |
+| Card radius / border / shadow | |
+| Container max width | |
+
+### 3. Things to note by eye
+
+The snippet won't catch these — check them yourself and write a line on each:
+
+- **Section rhythm:** how much vertical padding between sections? Tight and dense, or generous and airy?
+- **Alignment:** are headings left-aligned or centred?
+- **Imagery:** photography, illustration, abstract shapes, or product screenshots? Any consistent treatment (duotone, rounded corners, full-bleed)?
+- **Motion:** does anything animate on scroll? Subtle or pronounced?
+- **Header behaviour:** transparent over hero then solid on scroll, or solid throughout?
+- **Density of copy:** long explanatory paragraphs, or short punchy statements?
+
+If the reference site's approach contradicts anything in this prompt, **the reference site wins** — brand consistency matters more than my suggestions.
 
 ## Placeholders to fill before pasting
 
 | Placeholder | What to put | Where to find it |
 |---|---|---|
-| `[BRAND_PRIMARY]` | Primary brand hex | Existing site CSS or brand guidelines |
-| `[BRAND_DARK]` | Dark neutral hex for text/footers | As above |
-| `[BRAND_ACCENT]` | Accent/CTA hex | As above |
+| `[BRAND_PRIMARY]`, `[BRAND_DARK]`, `[BRAND_ACCENT]`, `[BRAND_BG]` | Brand hex values | Console snippet output — see "Matching the house style" |
+| `[HEADING_FONT]`, `[BODY_FONT]` | Font families | As above |
+| `[H1_SPEC]`, `[H2_SPEC]`, `[BODY_SPEC]` | Size / weight / line height / tracking | As above |
+| `[BUTTON_SPEC]`, `[CARD_SPEC]`, `[MAX_WIDTH]` | Component and container specs | As above |
+| `[SECTION_RHYTHM]`, `[ALIGNMENT]`, `[HEADER_BEHAVIOUR]`, `[MOTION_NOTE]`, `[IMAGERY_NOTE]` | Observed by eye | "Things to note by eye" |
 | `[PHONE]` | Switchboard number | Main site contact page |
 | `[EMAIL]` | Enquiries address | As above |
 | `[MAIN_SITE_URL]` | `https://www.influentialsoftware.com` | — |
@@ -45,15 +133,21 @@ Build a marketing website for the AI services division of Influential Software, 
 - Semantic HTML5 landmarks, WCAG 2.1 AA: 4.5:1 text contrast minimum, visible focus rings, keyboard-navigable, alt text on all images, `aria-label` on icon-only buttons
 - Respect `prefers-reduced-motion` — disable all scroll and hover animation when set
 
-## Design direction
+## Design direction — match the attached reference
 
-Restrained, confident, enterprise. Think of the reference points as consultancies like Thoughtworks or Kainos rather than SaaS product sites. The visual job is to make a thirty-year-old consultancy look current without looking like it's chasing trends.
+**I have attached screenshots of our existing site, `influential.software`. This is our house style and the new site must look like it belongs to the same brand.** Study the screenshots and derive the design system from them: colour palette, typography, spacing rhythm, button and card styling, header behaviour, imagery treatment, and section layout patterns. Where the screenshots and my written notes below disagree, **follow the screenshots.**
 
-- **Colours:** primary `[BRAND_PRIMARY]`, dark neutral `[BRAND_DARK]`, accent `[BRAND_ACCENT]`. Build a full Tailwind scale from these. Backgrounds are predominantly white/near-white in light mode and a deep neutral (not pure black) in dark mode. Use the accent sparingly — CTAs and small highlights only.
-- **Typography:** one clean geometric or neo-grotesque sans (Inter, Söhne-like, or similar) via a self-hosted or Google font. Large, tight-tracked headings; body text at 17–18px with generous line height (1.6+). Maximum 70 characters per line in body copy.
-- **Layout:** generous whitespace, a consistent 8px spacing scale, max content width around 1200px with narrower 720px text columns for reading sections. Let sections breathe — this should feel unhurried.
-- **Motion:** subtle only. Fade-and-rise on scroll for section entry (short duration, no stagger longer than 400ms total), gentle hover states on cards and buttons. No parallax, no counters spinning up, no typewriter effects.
-- **Imagery:** abstract geometric shapes, subtle gradient meshes, or line-based system diagrams. Absolutely no stock photos of people pointing at screens, no glowing blue brains, no robot hands touching human hands, no circuit-board motifs.
+Reproduce from the reference:
+
+- **Colours:** primary `[BRAND_PRIMARY]`, dark neutral `[BRAND_DARK]`, accent `[BRAND_ACCENT]`, page background `[BRAND_BG]`. Build a full Tailwind scale from these and define them as design tokens in the Tailwind config — no hardcoded hex values in components. Use the accent sparingly, as the reference does.
+- **Typography:** headings in `[HEADING_FONT]`, body in `[BODY_FONT]`. Match the reference's type scale, weights, and letter-spacing: H1 `[H1_SPEC]`, H2 `[H2_SPEC]`, body `[BODY_SPEC]`. Keep body copy to a maximum of 70 characters per line.
+- **Components:** buttons with `[BUTTON_SPEC]`; cards with `[CARD_SPEC]`. Match the reference's hover states.
+- **Layout:** container max width `[MAX_WIDTH]`, consistent 8px spacing scale, and the same vertical section rhythm as the reference — `[SECTION_RHYTHM]`. Headings `[ALIGNMENT]`.
+- **Header:** `[HEADER_BEHAVIOUR]`.
+- **Motion:** `[MOTION_NOTE]`. Keep it subtle either way — no parallax, no counters spinning up, no typewriter effects. Honour `prefers-reduced-motion`.
+- **Imagery:** follow the reference's treatment — `[IMAGERY_NOTE]`. Where new visuals are needed, use abstract geometric shapes or line-based system diagrams consistent with that treatment.
+
+Dark mode: if the reference site has one, mirror it. If it doesn't, derive a dark palette from the same brand colours — deep neutral backgrounds rather than pure black, and check contrast in both modes.
 
 ## Page sections, in order
 
@@ -177,7 +271,11 @@ Run these in order, one at a time, after Prompt 1 has built successfully.
 
 > Add analytics with events for: hero primary CTA click, each service CTA click, closing CTA click, contact form start, and contact form submit. Use a single configurable analytics module so the provider can be swapped without touching the components. Leave the provider key as an environment variable placeholder.
 
-## 6 — Copy tightening
+## 6 — Brand consistency check against the reference
+
+> I'm attaching screenshots of `influential.software` again. Compare the site you've built against them, side by side, and correct any drift: colour values, font weights and sizes, button and card styling, section padding rhythm, header behaviour, and hover states. List each difference you found and what you changed. Where the reference and the current build differ, the reference is correct.
+
+## 7 — Copy tightening
 
 > Review every line of copy on the site for length and rhythm. Anything over 25 words that can be split should be split. Remove any adjective that isn't doing work. Confirm British spellings throughout. Show me a diff of what you changed rather than applying it silently.
 
